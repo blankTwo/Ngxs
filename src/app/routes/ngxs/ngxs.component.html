@@ -1,7 +1,18 @@
 <form nz-form [formGroup]="form" nzLayout="horizontal">
-  <nz-form-label>名称</nz-form-label>
-  <nz-form-control>
-    <input nz-input formControlName="name" placeholder="名称...." />
-  </nz-form-control>
+  <nz-form-item>
+    <nz-form-label>name</nz-form-label>
+    <nz-form-control>
+      <input nz-input formControlName="name" />
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label>age</nz-form-label>
+    <nz-form-control>
+      <input nz-input formControlName="age" />
+    </nz-form-control>
+  </nz-form-item>
 </form>
 <button nz-button nzType="default" (click)="_submitForm()">提交</button>
+<pre>
+  {{ user$ | json }}
+</pre>

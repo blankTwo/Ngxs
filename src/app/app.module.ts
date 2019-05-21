@@ -66,6 +66,7 @@ import { AppComponent } from './app.component';
 import { RoutesModule } from './routes/routes.module';
 import { LayoutModule } from './layout/layout.module';
 import { NgxsModule } from '@ngxs/store';
+import { AddUser } from './routes/ngxs/animals-state';
 
 @NgModule({
   declarations: [AppComponent],
@@ -74,7 +75,7 @@ import { NgxsModule } from '@ngxs/store';
     BrowserAnimationsModule,
     HttpClientModule,
     DelonModule.forRoot(),
-    NgxsModule.forRoot([]),
+    NgxsModule.forRoot([AddUser]),
     CoreModule,
     SharedModule,
     LayoutModule,
