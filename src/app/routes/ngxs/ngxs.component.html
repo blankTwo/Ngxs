@@ -1,0 +1,7 @@
+<form nz-form [formGroup]="form" nzLayout="horizontal">
+  <nz-form-label>名称</nz-form-label>
+  <nz-form-control>
+    <input nz-input formControlName="name" placeholder="名称...." />
+  </nz-form-control>
+</form>
+<button nz-button nzType="default" (click)="_submitForm()">提交</button>
