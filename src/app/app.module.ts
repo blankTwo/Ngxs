@@ -67,7 +67,7 @@ import { RoutesModule } from './routes/routes.module';
 import { LayoutModule } from './layout/layout.module';
 import { NgxsModule } from '@ngxs/store';
 import { AddUser } from './routes/ngxs/animals-state';
-
+import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -76,6 +76,7 @@ import { AddUser } from './routes/ngxs/animals-state';
     HttpClientModule,
     DelonModule.forRoot(),
     NgxsModule.forRoot([AddUser]),
+    NgxsReduxDevtoolsPluginModule.forRoot(),
     CoreModule,
     SharedModule,
     LayoutModule,

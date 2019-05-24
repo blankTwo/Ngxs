@@ -10,10 +10,10 @@ import { UserModel, User } from './animal.actions';
 })
 export class AddUser {
   @Action(User) aUser(ctx: StateContext<UserModel>, action: User) {
-    console.log('user>>', action);
     const state = ctx.getState();
     ctx.setState({
       ...state,
+      ...action,
     });
   }
 }

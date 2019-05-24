@@ -7,12 +7,14 @@
   </nz-form-item>
   <nz-form-item>
     <nz-form-label>age</nz-form-label>
+
     <nz-form-control>
       <input nz-input formControlName="age" />
     </nz-form-control>
   </nz-form-item>
 </form>
 <button nz-button nzType="default" (click)="_submitForm()">提交</button>
+
 <pre>
-  {{ user$ | json }}
+  {{ user$ | async | json }}
 </pre>
