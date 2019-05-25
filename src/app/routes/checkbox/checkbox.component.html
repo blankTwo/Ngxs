@@ -18,9 +18,9 @@
 
   <span style="display: flex">
     <span class="ant-checkbox-inner"> </span>
-    <span #contentElement (cdkObserveContent)="checkContent()" style="padding-left: 8px"
-      ><ng-content></ng-content
-    ></span>
+    <span #contentElement (cdkObserveContent)="checkContent()" style="padding-left: 8px">
+      <ng-content></ng-content>
+    </span>
   </span>
 </span>
 
@@ -33,6 +33,7 @@ cdkConnectedOverlayMinWidth : 覆盖面板的最小宽度。
 cdkConnectedOverlayWidth :覆盖面板的宽度
 backdropClick : 单击背景时发出的事件
 detach : 分离叠加层时发出的事件。
+cdkConnectedOverlayPositions : 位置自动适应（待确定）
 
  -->
 <ng-template
@@ -45,22 +46,58 @@ detach : 分离叠加层时发出的事件。
   [cdkConnectedOverlayHasBackdrop]="true"
   [cdkConnectedOverlayMinWidth]="300"
   [cdkConnectedOverlayWidth]="300"
-  (positionChange)="onPositionChange($evemt)"
+  (positionChange)="onPositionChange($event)"
+  [cdkConnectedOverlayPositions]="_positions"
 >
-  <div class="ant-popover  ant-popover-placement-top">
+  <div class="ant-popover-placement-top">
     <div class="ant-popover-content">
       <div class="ant-popover-arrow"></div>
       <div class="ant-popover-inner">
         <div class="ant-popover-inner-content">
           <div class="ant-popover-message">
-            <i nz-icon nzType="minus-circle" nzTheme="outline"></i>
+            <ng-container *ngIf="isIconTemplateRef()">
+              <ng-template [ngTemplateOutlet]="hlIcon"> </ng-template>
+            </ng-container>
+            <ng-container *ngIf="!isIconTemplateRef()">
+              <i nz-icon nzType="exclamation-circle" nzTheme="outline"></i>
+            </ng-container>
+
             <div class="ant-popover-message-title">
-              Are you sure delete this task?
+              <ng-container *ngIf="!isCancelShowTootip">
+                <ng-container *ngIf="!isOTootipTemplateRef()">
+                  {{ hlOkTitle }}
+                </ng-container>
+                <ng-container *ngIf="isOTootipTemplateRef()">
+                  <ng-template [ngTemplateOutlet]="hlOkTitle"></ng-template>
+                </ng-container>
+              </ng-container>
+
+              <ng-container *ngIf="isCancelShowTootip">
+                <ng-container *ngIf="!nzChecked">
+                  <ng-container *ngIf="!isOTootipTemplateRef()">
+                    {{ hlOkTitle }}
+                  </ng-container>
+                  <ng-container *ngIf="isOTootipTemplateRef()">
+                    <ng-template [ngTemplateOutlet]="hlOkTitle"></ng-template>
+                  </ng-container>
+                </ng-container>
+
+                <ng-container *ngIf="nzChecked">
+                  <ng-container *ngIf="!isCTootipTemplateRef()">
+                    {{ hlCancelTitle }}
+                  </ng-container>
+                  <ng-container *ngIf="isCTootipTemplateRef()">
+                    <ng-template [ngTemplateOutlet]="hlCancelTitle"></ng-template>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
             </div>
           </div>
           <div class="ant-popover-buttons">
-            <button nz-button nzType="default" nzSize="small">取消</button>
-            <button nz-button nzType="primary" nzSize="small">确定</button>
+            <button *ngIf="hlCancelText" nz-button nzType="default" nzSize="small" (click)="_onCancel()">
+              {{ hlCancelText }}
+            </button>
+            <button nz-button nzType="primary" nzSize="small" (click)="_onOk()">{{ hlOkText }}</button>
           </div>
         </div>
       </div>

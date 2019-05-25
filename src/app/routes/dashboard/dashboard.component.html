@@ -3,5 +3,19 @@
 </nz-card>
 
 <nz-card>
-  <app-checkbox [(ngModel)]="checked" (ngModelChange)="ngModelChange($event)">123123</app-checkbox>
+  <app-checkbox
+    hlOkTitle="是否启用"
+    hlCancelTitle="是否停用"
+    hlCancelText="否"
+    hlOkText="是"
+    [hlIcon]="icon"
+    [(ngModel)]="checked"
+    isCancelShowTootip="true"
+    (ngModelChange)="ngModelChange($event)"
+  >
+    用户状态
+    <ng-template #icon>
+      <i nz-icon nzType="delete" nzTheme="outline" style="color: red"></i>
+    </ng-template>
+  </app-checkbox>
 </nz-card>

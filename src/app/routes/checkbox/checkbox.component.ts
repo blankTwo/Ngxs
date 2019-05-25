@@ -1,12 +1,18 @@
 import { FocusMonitor } from '@angular/cdk/a11y';
 import {
-  forwardRef,
+  CdkConnectedOverlay,
+  CdkOverlayOrigin,
+  ConnectedOverlayPositionChange,
+  ConnectionPositionPair,
+} from '@angular/cdk/overlay';
+import {
   AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
+  forwardRef,
   Input,
   OnChanges,
   OnDestroy,
@@ -14,13 +20,13 @@ import {
   Output,
   Renderer2,
   SimpleChanges,
+  TemplateRef,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { DEFAULT_TOOLTIP_POSITIONS, InputBoolean, isEmpty } from 'ng-zorro-antd/core';
 
-import { isEmpty, InputBoolean } from 'ng-zorro-antd/core';
-import { CdkOverlayOrigin, ConnectedOverlayPositionChange, CdkConnectedOverlay } from '@angular/cdk/overlay';
 @Component({
   selector: 'app-checkbox',
   exportAs: 'nzCheckbox',
@@ -91,14 +97,41 @@ export class CheckboxComponent implements OnInit, ControlValueAccessor, OnChange
   nzOpen = false;
   dropDownPosition: 'top' | 'center' | 'bottom' = 'bottom';
 
+  _positions: ConnectionPositionPair[] = [...DEFAULT_TOOLTIP_POSITIONS];
+
   triggerWidth: number;
   //#region
 
-  hostClick(e: MouseEvent): void {
-    // console.log('xx', this.nzChecked);
-    // e.preventDefault();
-    // this.focus();
-    //this.innerCheckedChange(!this.nzChecked);
+  _isCheck = false;
+  /* 取消时是否提示 */
+  @Input() @InputBoolean() isCancelShowTootip = false;
+
+  @Input() hlCancelTitle: string | TemplateRef<{}>;
+  @Input() hlOkTitle: string | TemplateRef<{}>;
+  @Input() hlCancelText = '取消';
+  @Input() hlOkText = '确定';
+
+  hostClick(e: MouseEvent): void {}
+
+  @Output() hlOnCancel = new EventEmitter();
+  @Output() hlOnConfirm = new EventEmitter();
+  @Input() hlIcon: TemplateRef<{}>;
+
+  /* 取消 */
+  _onCancel() {
+    this.hlOnCancel.emit();
+    this.closeDropDown();
+  }
+
+  /* 确定 */
+  _onOk() {
+    this._isCheck = !this._isCheck;
+    this.nzChecked = this._isCheck;
+    this.onChange(this.nzChecked);
+    this.nzCheckedChange.emit(this.nzChecked);
+
+    this.hlOnConfirm.emit(this.nzChecked);
+    this.closeDropDown();
   }
 
   closeDropDown(): void {
@@ -108,16 +141,23 @@ export class CheckboxComponent implements OnInit, ControlValueAccessor, OnChange
     this.cdr.markForCheck();
   }
 
+  isCTootipTemplateRef() {
+    return this.hlCancelTitle instanceof TemplateRef;
+  }
+  isOTootipTemplateRef() {
+    return this.hlOkTitle instanceof TemplateRef;
+  }
+  isIconTemplateRef() {
+    return this.hlIcon instanceof TemplateRef;
+  }
+
   onPositionChange(position: ConnectedOverlayPositionChange): void {
-    debugger;
     this.dropDownPosition = position.connectionPair.originY;
   }
 
   openDropdown(): void {
-    debugger;
     if (!this.nzDisabled) {
       this.nzOpen = true;
-
       this.updateCdkConnectedOverlayStatus();
       this.updatePosition();
     }
@@ -128,16 +168,43 @@ export class CheckboxComponent implements OnInit, ControlValueAccessor, OnChange
   }
 
   updatePosition(): void {
-    if (this.cdkConnectedOverlay && this.cdkConnectedOverlay.overlayRef) {
-      this.cdkConnectedOverlay.overlayRef.updatePosition();
-    }
+    setTimeout(() => {
+      if (this.cdkConnectedOverlay && this.cdkConnectedOverlay.overlayRef) {
+        this.cdkConnectedOverlay.overlayRef.updatePosition();
+      }
+    });
   }
 
   innerCheckedChange(checked: boolean): void {
     if (!this.nzDisabled) {
-      this.nzChecked = checked;
+      if (!this._isCheck) {
+        this.clickOk();
+      } else {
+        this.clickCancle();
+      }
+
+      // this.nzChecked = checked;
+      // this.onChange(this.nzChecked);
+      // this.nzCheckedChange.emit(this.nzChecked);
+
+      // this._onOk(checked);
+    }
+  }
+
+  /* 点击勾上时 */
+  clickOk() {
+    this._isCheck = false;
+    this.nzChecked = this._isCheck;
+    this.openDropdown();
+  }
+  /* 点击取消时 */
+  clickCancle() {
+    if (!this.isCancelShowTootip) {
+      this._isCheck = false;
+      this.nzChecked = this._isCheck;
       this.onChange(this.nzChecked);
       this.nzCheckedChange.emit(this.nzChecked);
+    } else {
       this.openDropdown();
     }
   }
