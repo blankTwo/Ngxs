@@ -116,6 +116,7 @@ export class CheckboxComponent implements OnInit, ControlValueAccessor, OnChange
   @Output() hlOnCancel = new EventEmitter();
   @Output() hlOnConfirm = new EventEmitter();
   @Input() hlIcon: TemplateRef<{}>;
+  @Input() hlWidth = 300;
 
   /* 取消 */
   _onCancel() {
@@ -220,6 +221,7 @@ export class CheckboxComponent implements OnInit, ControlValueAccessor, OnChange
   }
 
   writeValue(value: boolean): void {
+    this._isCheck = value;
     this.nzChecked = value;
     this.cdr.markForCheck();
   }
