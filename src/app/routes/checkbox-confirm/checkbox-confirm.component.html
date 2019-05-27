@@ -23,26 +23,13 @@
     </span>
   </span>
 </span>
-
-<!--
-cdkConnectedOverlay : 覆盖层声明
-cdkConnectedOverlayOrigin ：连接点（需要覆盖层度标签）
-cdkConnectedOverlayOpen ： 覆盖层是否打开
-cdkConnectedOverlayHasBackdrop : 叠加层是否应附加背景=true
-cdkConnectedOverlayMinWidth : 覆盖面板的最小宽度。
-cdkConnectedOverlayWidth :覆盖面板的宽度
-backdropClick : 单击背景时发出的事件
-detach : 分离叠加层时发出的事件。
-cdkConnectedOverlayPositions : 位置自动适应（待确定）
-
- -->
 <ng-template
   cdkConnectedOverlay
   nzConnectedOverlay
   [cdkConnectedOverlayOrigin]="cdkOverlayOrigin"
   [cdkConnectedOverlayOpen]="nzOpen"
-  (backdropClick)="closeDropDown()"
-  (detach)="closeDropDown()"
+  (backdropClick)="closeConfirm()"
+  (detach)="closeConfirm()"
   [cdkConnectedOverlayHasBackdrop]="true"
   [cdkConnectedOverlayMinWidth]="hlWidth"
   [cdkConnectedOverlayWidth]="hlWidth"

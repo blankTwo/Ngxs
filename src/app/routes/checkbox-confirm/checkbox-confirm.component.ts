@@ -28,16 +28,16 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { DEFAULT_TOOLTIP_POSITIONS, InputBoolean, isEmpty } from 'ng-zorro-antd/core';
 
 @Component({
-  selector: 'app-checkbox',
+  selector: 'checkbox-confirm',
   exportAs: 'nzCheckbox',
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  templateUrl: './checkbox.component.html',
+  templateUrl: './checkbox-confirm.component.html',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => CheckboxComponent),
+      useExisting: forwardRef(() => CheckboxConfirmComponent),
       multi: true,
     },
   ],
@@ -56,7 +56,7 @@ import { DEFAULT_TOOLTIP_POSITIONS, InputBoolean, isEmpty } from 'ng-zorro-antd/
     `,
   ],
 })
-export class CheckboxComponent implements OnInit, ControlValueAccessor, OnChanges, AfterViewInit, OnDestroy {
+export class CheckboxConfirmComponent implements OnInit, ControlValueAccessor, OnChanges, AfterViewInit, OnDestroy {
   constructor(
     private elementRef: ElementRef<HTMLElement>,
     private renderer: Renderer2,
@@ -65,66 +65,46 @@ export class CheckboxComponent implements OnInit, ControlValueAccessor, OnChange
   ) {
     renderer.addClass(elementRef.nativeElement, 'ant-checkbox-wrapper');
   }
-  // tslint:disable-next-line:member-ordering
-  @ViewChild('inputElement') private inputElement: ElementRef;
 
-  // tslint:disable-next-line:member-ordering
+  @ViewChild('inputElement') private inputElement: ElementRef;
   @ViewChild('contentElement') private contentElement: ElementRef;
 
-  // tslint:disable-next-line:member-ordering
-  @Output() readonly nzCheckedChange = new EventEmitter<boolean>();
-
-  // tslint:disable-next-line:member-ordering
-  @Input() nzValue: string;
-
-  // tslint:disable-next-line:member-ordering
-  @Input() @InputBoolean() nzAutoFocus = false;
-  // tslint:disable-next-line:member-ordering
-  @Input() @InputBoolean() nzDisabled = false;
-  // tslint:disable-next-line:member-ordering
-  @Input() @InputBoolean() nzIndeterminate = false;
-  // tslint:disable-next-line:member-ordering
-  @Input() @InputBoolean() nzChecked = true;
-
-  onChange: (value: any) => void = () => null;
-  // tslint:disable-next-line:no-any
-  onTouched: () => any = () => null;
-
   @ViewChild(CdkOverlayOrigin) cdkOverlayOrigin: CdkOverlayOrigin;
-  // tslint:disable-next-line:member-ordering
   @ViewChild(CdkConnectedOverlay) cdkConnectedOverlay: CdkConnectedOverlay;
 
-  nzOpen = false;
-  dropDownPosition: 'top' | 'center' | 'bottom' = 'bottom';
+  @Output() readonly nzCheckedChange = new EventEmitter<boolean>();
+  @Output() hlOnCancel = new EventEmitter();
+  @Output() hlOnConfirm = new EventEmitter();
+  @Output() OverlayClose = new EventEmitter();
 
-  _positions: ConnectionPositionPair[] = [...DEFAULT_TOOLTIP_POSITIONS];
+  @Input() nzValue: string;
+  @Input() @InputBoolean() nzAutoFocus = false;
+  @Input() @InputBoolean() nzDisabled = false;
+  @Input() @InputBoolean() nzIndeterminate = false;
+  @Input() @InputBoolean() nzChecked = true;
 
-  triggerWidth: number;
-  //#region
-
-  _isCheck = false;
-  /* 取消时是否提示 */
   @Input() @InputBoolean() isCancelShowTootip = false;
-
   @Input() hlCancelTitle: string | TemplateRef<{}>;
   @Input() hlOkTitle: string | TemplateRef<{}>;
   @Input() hlCancelText = '取消';
   @Input() hlOkText = '确定';
-
-  hostClick(e: MouseEvent): void {}
-
-  @Output() hlOnCancel = new EventEmitter();
-  @Output() hlOnConfirm = new EventEmitter();
   @Input() hlIcon: TemplateRef<{}>;
   @Input() hlWidth = 300;
 
-  /* 取消 */
+  onChange: (value: any) => void = () => null;
+  onTouched: () => any = () => null;
+  nzOpen = false;
+  ConfirmPosition: 'top' | 'center' | 'bottom' = 'bottom';
+  _positions: ConnectionPositionPair[] = [...DEFAULT_TOOLTIP_POSITIONS];
+  triggerWidth: number;
+  _isCheck = false;
+
+  hostClick(e: MouseEvent): void {}
+
   _onCancel() {
     this.hlOnCancel.emit();
-    this.closeDropDown();
+    this.closeConfirm();
   }
-
-  /* 确定 */
   _onOk() {
     this._isCheck = !this._isCheck;
     this.nzChecked = this._isCheck;
@@ -132,14 +112,14 @@ export class CheckboxComponent implements OnInit, ControlValueAccessor, OnChange
     this.nzCheckedChange.emit(this.nzChecked);
 
     this.hlOnConfirm.emit(this.nzChecked);
-    this.closeDropDown();
+    this.closeConfirm();
   }
 
-  closeDropDown(): void {
+  closeConfirm(): void {
     this.onTouched();
     this.nzOpen = false;
-
     this.cdr.markForCheck();
+    this.OverlayClose.emit();
   }
 
   isCTootipTemplateRef() {
@@ -153,10 +133,10 @@ export class CheckboxComponent implements OnInit, ControlValueAccessor, OnChange
   }
 
   onPositionChange(position: ConnectedOverlayPositionChange): void {
-    this.dropDownPosition = position.connectionPair.originY;
+    this.ConfirmPosition = position.connectionPair.originY;
   }
 
-  openDropdown(): void {
+  openConfirm(): void {
     if (!this.nzDisabled) {
       this.nzOpen = true;
       this.updateCdkConnectedOverlayStatus();
@@ -183,22 +163,15 @@ export class CheckboxComponent implements OnInit, ControlValueAccessor, OnChange
       } else {
         this.clickCancle();
       }
-
-      // this.nzChecked = checked;
-      // this.onChange(this.nzChecked);
-      // this.nzCheckedChange.emit(this.nzChecked);
-
-      // this._onOk(checked);
     }
   }
 
-  /* 点击勾上时 */
   clickOk() {
     this._isCheck = false;
     this.nzChecked = this._isCheck;
-    this.openDropdown();
+    this.openConfirm();
   }
-  /* 点击取消时 */
+
   clickCancle() {
     if (!this.isCancelShowTootip) {
       this._isCheck = false;
@@ -206,7 +179,7 @@ export class CheckboxComponent implements OnInit, ControlValueAccessor, OnChange
       this.onChange(this.nzChecked);
       this.nzCheckedChange.emit(this.nzChecked);
     } else {
-      this.openDropdown();
+      this.openConfirm();
     }
   }
 
@@ -277,5 +250,4 @@ export class CheckboxComponent implements OnInit, ControlValueAccessor, OnChange
   ngOnDestroy(): void {
     this.focusMonitor.stopMonitoring(this.elementRef);
   }
-  //#endregion
 }

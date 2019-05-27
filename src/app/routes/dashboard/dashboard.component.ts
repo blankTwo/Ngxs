@@ -7,17 +7,6 @@ import { _HttpClient } from '@delon/theme';
 })
 export class DashboardComponent implements OnInit {
   constructor(private http: _HttpClient) {}
-  checked = true;
 
   ngOnInit() {}
-
-  ngModelChange(event: any) {
-    console.log('change', event);
-  }
-  cancel() {
-    console.log('取消了');
-  }
-  ok() {
-    console.log('确定');
-  }
 }

@@ -1,4 +1,4 @@
-### [app-checkbox]
+### [checkbox-confirm]
 
 | 参数                   | 说明                                      | 类型                       | 默认值   |
 |------------------------|-----------------------------------------|----------------------------|----------|
@@ -11,3 +11,4 @@
 | `(hlOnCancel)`         | 点击取消的回调                            | `EventEmitter<void>`       | -        |
 | `(hlOnConfirm)`        | 点击确认的回调                            | `EventEmitter<Event>`      | -        |
 | `[hlWidth]`            | 描述框宽度                                | `number`                   | `300`    |
+| `(OverlayClose)`       | 覆盖层关闭回调                            | `EventEmitter<void>`       | -        |
